@@ -1,4 +1,3 @@
-import React from 'react'
 import { useReducer, useEffect, useState } from "react"
 import { projectFirestore, timestamp } from "../firebase/config"
 
