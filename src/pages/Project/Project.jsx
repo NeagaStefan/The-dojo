@@ -1,11 +1,10 @@
 import React, {useState} from 'react'
 import './Project.css'
-import {useNavigate, useParams} from "react-router-dom";
+import { useParams} from "react-router-dom";
 import {useDocument} from "../../hooks/useDocument";
 import ProjectSummary from "./ProjectSummary";
 import ProjectComments from "./ProjectComments";
 import Update from "../Update/Update";
-import {useAuthContext} from "../../hooks/useAuthContext";
 
 export default function Project() {
     const [edit, setEdit]=useState(false)

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import Avatar from "../../components/Avatar";
 import {useFirestore} from "../../hooks/useFirestore";
 import {useAuthContext} from "../../hooks/useAuthContext";
