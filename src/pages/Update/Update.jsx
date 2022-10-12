@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react'
-import './Create.css'
+import './Update.css'
 import Select from "react-select";
 import {useCollection} from "../../hooks/useCollection";
 import {timestamp} from "../../firebase/config";
-import {useAuthContext} from "../../hooks/useAuthContext";
 import {useFirestore} from "../../hooks/useFirestore";
 import {useNavigate} from "react-router-dom";
 
@@ -14,20 +13,20 @@ const categories =[
     {value:'marketing', label:"Marketing"}
 ]
 
-export default function Create() {
+export default function Update({project}){
     const { documents } = useCollection('users')
-    const { user } = useAuthContext()
-    const [users, setUsers] = useState([])
 
-    const [name, setName] = useState('')
-    const [details, setDetails] = useState('')
-    const [dueDate, setDueDate] =  useState('')
-    const [category, setCategory] = useState('')
-    const [assignedUsers, setAssignedUsers] = useState([])
+    const [users, setUsers] = useState()
+
+    const [updatedName, setName] = useState(project.name)
+    const [details, setDetails] = useState(project.details)
+    let [dueDate, setDueDate] =  useState('')
+    const [category, setCategory] = useState(project.category)
+    const [assignedUsers, setAssignedUsers] = useState(project.assignedUsersList)
     const [formError, setFormError] = useState(null)
 
     const  navigate = useNavigate();
-    const{ addDocument, response }= useFirestore('projects')
+    const{ updateDocument, response }= useFirestore('projects')
 
     useEffect(()=>{
         if(documents){
@@ -50,11 +49,6 @@ export default function Create() {
             setFormError("Please assign the project to at least 1 user")
             return;
         }
-        const createdBy = {
-            displayName:user.displayName,
-            photoURL: user.photoURL,
-            id: user.uid
-        }
 
         const assignedUsersList = assignedUsers.map((user)=>{
             return {
@@ -64,19 +58,10 @@ export default function Create() {
             }
         })
 
-
-        const  project = {
-            name,
-            details,
-            category: category.value,
-            dueDate: timestamp.fromDate(new Date(dueDate)),
-            comments:[],
-            createdBy,
-            assignedUsersList
-        }
-        await  addDocument(project)
+        dueDate= timestamp.fromDate(new Date(dueDate))
+        await  updateDocument(project.id, {name:updatedName,details, category,dueDate,assignedUsersList})
         if(!response.error){
-           navigate('/')
+            navigate(`/`)
         }
     }
 
@@ -90,7 +75,7 @@ export default function Create() {
                         required
                         type={"text"}
                         onChange={(e)=>setName(e.target.value)}
-                        value={name}
+                        value={updatedName}
                     />
                 </label>
                 <label>
@@ -116,6 +101,7 @@ export default function Create() {
                     <Select
                         onChange={(option)=>setCategory(option)}
                         options={categories}
+                        defaultValue={category}
                     />
                 </label>
                 <label>
@@ -127,7 +113,7 @@ export default function Create() {
                     />
                 </label>
 
-                <button className={"btn"}>Add project</button>
+                <button className={"btn"}>Complete edit</button>
 
                 {formError && <p className={"error"}>{formError}</p>}
             </form>

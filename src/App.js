@@ -1,5 +1,5 @@
 import React from 'react'
-import {BrowserRouter, Route, Switch, Redirect} from "react-router-dom";
+import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
 
 import './App.css';
 import Dashboard from "./pages/dashboard/Dashboard";
@@ -11,6 +11,7 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import {useAuthContext} from "./hooks/useAuthContext";
 import OnlineUsers from "./components/OnlineUsers";
+import Update from "./pages/Update/Update";
 
 function App() {
     const {authIsReady, user} = useAuthContext()
@@ -22,28 +23,26 @@ function App() {
                     {user && <Sidebar/>}
                     <div className="container">
                         <Navbar/>
-                        <Switch>
-                            <Route exact path="/">
-                                {!user && <Redirect to="/login"/>}
-                                {user && <Dashboard/>}
-                            </Route>
-                            <Route path="/create">
-                                {!user && <Redirect to="/login"/>}
-                                {user && <Create/>}
-                            </Route>
-                            <Route path="/projects/:id">
-                                {!user && <Redirect to="/login"/>}
-                                {user && <Project/>}
-                            </Route>
-                            <Route path="/login">
-                                {user && <Redirect to="/"/>}
-                                {!user && <Login/>}
-                            </Route>
-                            <Route path="/signup">
-                                {user && user.displayName && <Redirect to="/"/>}
-                                {!user && <Signup/>}
-                            </Route>
-                        </Switch>
+                        <Routes>
+                            <Route exact path="/"
+                                element ={!user ? <Navigate to="/login"/> : <Dashboard/>}
+                            />
+                            <Route path="/create"
+                                element={!user ? <Navigate to="/login"/> : <Create/>}
+                            />
+                            <Route path="/projects/:id"
+                                element={!user ? <Navigate to="/login"/> : <Project/>}
+                            />
+                            <Route path="/login"
+                                element={user ? <Navigate to="/"/> : <Login/>}
+                            />
+                            <Route path="/signup"
+                                element ={user ?  <Navigate to="/"/> : <Signup/>}
+                            />
+                            <Route path="/update"
+                                   element ={!user ?  <Navigate to="/login"/> : <Update/>}
+                            />
+                        </Routes>
                     </div>
                     {user && <OnlineUsers/>}
                 </BrowserRouter>

@@ -1,17 +1,22 @@
-import React from "react";
+import React, {useState} from "react";
 import Avatar from "../../components/Avatar";
 import {useFirestore} from "../../hooks/useFirestore";
 import {useAuthContext} from "../../hooks/useAuthContext";
-import {useHistory} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
-export default function ProjectSummary({project}) {
-    const history = useHistory()
+export default function ProjectSummary({project, chooseEdit,edit}) {
+    const navigate = useNavigate()
     const {deleteDocument} =useFirestore('projects')
     const {user} = useAuthContext()
 
     const handleClick = (e) =>{
         deleteDocument(project.id)
-        history.push('/')
+        navigate('/')
+    }
+
+    const  handleEdit =(e)=>{
+        e.preventDefault()
+        chooseEdit(true);
     }
 
     return(
@@ -22,7 +27,7 @@ export default function ProjectSummary({project}) {
                 <p className={"due-date"}>
                 Project due by {project.dueDate.toDate().toDateString()}
                 </p>
-                < p className={"details"}>
+                <p className={"details"}>
                     {project.details}
                 </p>
                 <h4>Project is assigned to:</h4>
@@ -32,6 +37,8 @@ export default function ProjectSummary({project}) {
                     </div>
                 ))}
             </div>
+
+            {user.uid===project.createdBy.id && !edit && (<button className={"btn-edit"} onClick={handleEdit}>Edit project</button>)}
             {user.uid===project.createdBy.id &&(
                 <button className={"btn"} onClick={handleClick}>Mark as complete</button>
             )}
